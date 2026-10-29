@@ -1,0 +1,144 @@
+{% extends 'products/base.html' %}
+{% load static %}
+
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+<!-- Итоговые показатели -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3 col-6">
+        <div class="card shadow-sm border-success">
+            <div class="card-body text-center">
+                <i class="bi bi-droplet fs-1 text-success"></i>
+                <h6 class="text-muted">Белки</h6>
+                <h3 class="text-success">{{ total_protein }} <small class="fs-6">г</small></h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="card shadow-sm border-warning">
+            <div class="card-body text-center">
+                <i class="bi bi-fire fs-1 text-warning"></i>
+                <h6 class="text-muted">Жиры</h6>
+                <h3 class="text-warning">{{ total_fat }} <small class="fs-6">г</small></h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="card shadow-sm border-info">
+            <div class="card-body text-center">
+                 <i class="bi bi-cup-straw fs-1 text-white"></i>
+                <h6 class="text-muted">Углеводы</h6>
+                <h3 class="text-white">{{ total_carbs }} <small class="fs-6">г</small></h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="card shadow-sm border-danger">
+            <div class="card-body text-center">
+                <i class="bi bi-lightning fs-1 text-danger"></i>
+                <h6 class="text-muted">Калории</h6>
+                <h3 class="text-danger">{{ total_calories }} <small class="fs-6">ккал</small></h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Список продуктов -->
+<div class="card shadow">
+    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+            <i class="bi bi-list-ul"></i> Список продуктов
+            <span class="badge bg-light text-dark ms-2">{{ product_count }}</span>
+        </h5>
+        <div>
+            <form action="{% url 'save_daily_record' %}" method="POST" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success btn-sm">
+                    <i class="bi bi-save"></i> Сохранить день
+                </button>
+            </form>
+            <form action="{% url 'clear_all' %}" method="POST" class="d-inline" 
+                  onsubmit="return confirm('Вы уверены, что хотите очистить все данные?')">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-sm">
+                    <i class="bi bi-trash"></i> Очистить
+                </button>
+            </form>
+            <a href="{% url 'add_product' %}" class="btn btn-primary btn-sm">
+                <i class="bi bi-plus-lg"></i> Добавить
+            </a>
+        </div>
+    </div>
+    <div class="card-body">
+        {% if products %}
+        <div class="table-responsive">
+            <table class="table table-hover table-striped align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Название</th>
+                        <th class="text-center">Белки (г)</th>
+                        <th class="text-center">Жиры (г)</th>
+                        <th class="text-center">Углеводы (г)</th>
+                        <th class="text-center">Калории</th>
+                        <th class="text-center">Вес (г)</th>
+                        <th class="text-center">Факт. калории</th>
+                        <th class="text-center">Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td><strong>{{ product.name }}</strong></td>
+                        <td class="text-center">{{ product.protein|floatformat:2 }}</td>
+                        <td class="text-center">{{ product.fat|floatformat:2 }}</td>
+                        <td class="text-center">{{ product.carbs|floatformat:2 }}</td>
+                        <td class="text-center">{{ product.calories|floatformat:2 }}</td>
+                        <td class="text-center">{{ product.weight|floatformat:1 }}</td>
+                        <td class="text-center">
+                            <span class="badge bg-danger">{{ product.actual_calories|floatformat:2 }}</span>
+                        </td>
+                        <td class="text-center">
+                            <a href="{% url 'edit_product' product.id %}" class="btn btn-warning btn-sm">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <form action="{% url 'delete_product' product.id %}" method="POST" class="d-inline"
+                                  onsubmit="return confirm('Удалить продукт "{{ product.name }}"?')">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    <i class="bi bi-x-lg"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot class="table-dark">
+                    <tr>
+                        <th colspan="2" class="text-end">ИТОГО:</th>
+                        <th class="text-center">{{ total_protein }}</th>
+                        <th class="text-center">{{ total_fat }}</th>
+                        <th class="text-center">{{ total_carbs }}</th>
+                        <th class="text-center">{{ total_calories }}</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-inbox" style="font-size: 4rem; color: #ccc;"></i>
+            <h5 class="mt-3 text-muted">Нет добавленных продуктов</h5>
+            <p class="text-muted">Начните с добавления первого продукта</p>
+            <a href="{% url 'add_product' %}" class="btn btn-primary">
+                <i class="bi bi-plus-lg"></i> Добавить продукт
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

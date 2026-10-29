@@ -1,0 +1,56 @@
+{% extends 'products/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block title %}Добавить продукт{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-plus-circle"></i> Добавить новый продукт
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" novalidate>
+                    {% csrf_token %}
+                    
+                    {{ form.name|as_crispy_field }}
+                    
+                    <div class="row">
+                        <div class="col-md-4">
+                            {{ form.protein|as_crispy_field }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form.fat|as_crispy_field }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form.carbs|as_crispy_field }}
+                        </div>
+                    </div>
+                    
+                    {{ form.weight|as_crispy_field }}
+                    
+                    <div class="alert alert-info mt-3">
+                        <h6><i class="bi bi-info-circle"></i> Формула расчета:</h6>
+                        <p class="mb-0">
+                            Калории = Белки × 4 + Жиры × 9 + Углеводы × 4
+                        </p>
+                    </div>
+                    
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary flex-grow-1">
+                            <i class="bi bi-check-lg"></i> Добавить
+                        </button>
+                        <a href="{% url 'index' %}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Назад
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

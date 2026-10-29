@@ -1,0 +1,99 @@
+{% extends 'products/base.html' %}
+
+{% block title %}Отчёт: {{ stats.name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3><i class="bi bi-file-text"></i> Отчёт по продукту: {{ stats.name }}</h3>
+    <a href="{% url 'report_products' %}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Назад
+    </a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3 col-6">
+        <div class="card bg-success text-white text-center">
+            <div class="card-body">
+                <h6>Введений</h6>
+                <h3>{{ stats.count }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="card bg-info text-white text-center">
+            <div class="card-body">
+                <h6>Общий вес</h6>
+                <h3>{{ stats.total_weight|floatformat:0 }} <small>г</small></h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="card bg-warning text-dark text-center">
+            <div class="card-body">
+                <h6>Средний вес</h6>
+                <h3>{{ stats.avg_weight|floatformat:0 }} <small>г</small></h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="card bg-danger text-white text-center">
+            <div class="card-body">
+                <h6>Всего калорий</h6>
+                <h3>{{ stats.total_calories|floatformat:0 }}</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-secondary text-white">Итого БЖУ за всё время</div>
+            <div class="card-body">
+                <p><strong>Белки:</strong> {{ stats.total_protein|floatformat:2 }} г</p>
+                <p><strong>Жиры:</strong> {{ stats.total_fat|floatformat:2 }} г</p>
+                <p><strong>Углеводы:</strong> {{ stats.total_carbs|floatformat:2 }} г</p>
+                <p><strong>Калории:</strong> {{ stats.total_calories|floatformat:2 }} ккал</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-secondary text-white">Период</div>
+            <div class="card-body">
+                <p><strong>Первый раз:</strong> {{ stats.first_date|date:"d.m.Y H:i" }}</p>
+                <p><strong>Последний раз:</strong> {{ stats.last_date|date:"d.m.Y H:i" }}</p>
+                <p><strong>Средние калории за раз:</strong> {{ stats.avg_calories|floatformat:2 }} ккал</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow">
+    <div class="card-header bg-dark text-white">По дням</div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-sm table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Дата</th>
+                        <th class="text-center">Введений</th>
+                        <th class="text-center">Вес, г</th>
+                        <th class="text-center">Калории</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for d, v in by_date.items %}
+                    <tr>
+                        <td>{{ d }}</td>
+                        <td class="text-center">{{ v.count }}</td>
+                        <td class="text-center">{{ v.weight|floatformat:1 }}</td>
+                        <td class="text-center"><span class="badge bg-danger">{{ v.calories|floatformat:0 }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
